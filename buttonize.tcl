@@ -67,7 +67,7 @@ proc executeCmd {state} {
   global CONFIG
   global env
 
-  if {[catch {exec $env(SHELL) -c {*}$CONFIG(cmd)} results options]} {
+  if {[catch {exec $env(SHELL) -c "$CONFIG(cmd)"} results options]} {
     .bCmd configure -background #fb5656
     .bCmd configure -activebackground #fb7474
   } else {
