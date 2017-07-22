@@ -18,6 +18,7 @@
 
 proc printUsageAndExit {} {
   puts "buttonize.tcl <button label> <button command>"
+  puts "  Hold shift when pressing button to display command output."
   exit 1
 }
 
@@ -37,13 +38,46 @@ proc getOptions {} {
 
 proc initGui {} {
   global CONFIG
-  button .bCmd -text $CONFIG(label) -command executeCmd
+
+  wm title . $CONFIG(label)
+
+  button .bCmd -text $CONFIG(label)
+  bind .bCmd <Button-1> "executeCmd %s"
   place .bCmd -x 0 -y 0 -relwidth 1.0 -relheight 1.0
 }
 
-proc executeCmd {} {
+set nextOutputNum 0
+proc showOutput {s} {
   global CONFIG
-  exec {*}$CONFIG(cmd)
+  global nextOutputNum
+
+  set t .output$nextOutputNum
+  incr nextOutputNum
+  toplevel $t
+  wm title $t "$CONFIG(label) output"
+  wm geometry $t "600x400"
+
+  text $t.txt
+  place $t.txt -x 0 -y 0 -relwidth 1.0 -relheight 1.0
+
+  $t.txt insert end $s
+}
+
+proc executeCmd {state} {
+  global CONFIG
+  global env
+
+  if {[catch {exec $env(SHELL) -c {*}$CONFIG(cmd)} results options]} {
+    .bCmd configure -background #fb5656
+    .bCmd configure -activebackground #fb7474
+  } else {
+    .bCmd configure -background #a2e869
+    .bCmd configure -activebackground #bbee91
+  }
+
+  if {$state == 1} {
+    showOutput $results
+  }
 }
 
 getOptions
