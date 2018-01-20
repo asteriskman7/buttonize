@@ -67,6 +67,10 @@ proc executeCmd {state} {
   global CONFIG
   global env
 
+  .bCmd configure -background #FF9933
+  .bCmd configure -activebackground #FF9933
+  update; update idletasks
+
   if {[catch {exec $env(SHELL) -c "$CONFIG(cmd)"} results options]} {
     .bCmd configure -background #fb5656
     .bCmd configure -activebackground #fb7474
