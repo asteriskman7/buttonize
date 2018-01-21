@@ -59,6 +59,7 @@ proc showOutput {s} {
     toplevel $t
     wm title $t "$CONFIG(label) output"
     wm geometry $t "600x400"
+    wm protocol $t WM_DELETE_WINDOW "destroy $t; set outputWindow {}"
 
     text $t.txt
     place $t.txt -x 0 -y 0 -relwidth 1.0 -relheight 1.0
