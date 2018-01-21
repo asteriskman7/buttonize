@@ -46,21 +46,36 @@ proc initGui {} {
   place .bCmd -x 0 -y 0 -relwidth 1.0 -relheight 1.0
 }
 
-set nextOutputNum 0
+set outputWindow {}
 proc showOutput {s} {
   global CONFIG
-  global nextOutputNum
+  global outputWindow
 
-  set t .output$nextOutputNum
-  incr nextOutputNum
-  toplevel $t
-  wm title $t "$CONFIG(label) output"
-  wm geometry $t "600x400"
 
-  text $t.txt
-  place $t.txt -x 0 -y 0 -relwidth 1.0 -relheight 1.0
+  if {$outputWindow == {}} {
+    set outputWindow ".outputWindow"
+    set t $outputWindow
+
+    toplevel $t
+    wm title $t "$CONFIG(label) output"
+    wm geometry $t "600x400"
+
+    text $t.txt
+    place $t.txt -x 0 -y 0 -relwidth 1.0 -relheight 1.0
+  } else {
+    set t $outputWindow
+    $t.txt delete 0.0 end
+  }
 
   $t.txt insert end $s
+}
+
+proc hideOutput {} {
+  global outputWindow
+  if {$outputWindow != {}} {
+    destroy $outputWindow
+  }
+  set outputWindow {}
 }
 
 proc executeCmd {state} {
@@ -77,10 +92,13 @@ proc executeCmd {state} {
   } else {
     .bCmd configure -background #a2e869
     .bCmd configure -activebackground #bbee91
+    set results "SUCCESS"
   }
 
   if {$state == 1} {
     showOutput $results
+  } else {
+    hideOutput
   }
 }
 
